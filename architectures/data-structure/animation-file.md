@@ -1,4 +1,4 @@
-# Animation
+# AnimationFile
 
 **Inherits:** [Node](./node.md)
 

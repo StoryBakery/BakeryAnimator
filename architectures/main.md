@@ -11,7 +11,7 @@
 애니메이션 데이터의 스키마 및 클래스 정의입니다.
 
 *   **[Node](./data-structure/node.md):** 최상위 추상 클래스.
-*   **[Animation](./data-structure/animation.md):** 애니메이션 루트 컨테이너.
+*   **[AnimationFile](./data-structure/animation-file.md):** 애니메이션 루트 컨테이너.
 *   **[Track](./data-structure/track.md):** 개별 인스턴스 트랙 (Object Identity).
 *   **[Channel](./data-structure/channel.md):** 속성 타임라인 (Value Timeline).
 *   **[Keyframe](./data-structure/keyframe.md):** 데이터 포인트.
@@ -23,6 +23,7 @@
 *   **[AnimationData](./runtime/animation-data.md):** 정적 데이터 컨테이너.
 *   **[AnimationTrack](./runtime/animation-track.md):** 런타임 재생 제어기.
 *   **[Detection](./runtime/detection.md):** 인스턴스 감지 및 매핑 전략.
+*   **[Interpolation Strategy](./runtime/interpolation.md):** 스칼라 분해 및 보간 알고리즘 상세.
 
 ### Tools & Editor
 애니메이션을 저작하는 에디터와 외부 도구 연동입니다.

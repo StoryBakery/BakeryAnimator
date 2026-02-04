@@ -27,36 +27,52 @@
 
 #### Duration
 `number`
-
 애니메이션의 총 길이 (초 단위) 입니다.
 
+#### Models
+`{ [string]: ModelSkeletonData }`
+이 애니메이션에 등장하는 모델(Model)들의 데이터 맵입니다.
+*   **Single Model**: `Models["Default"]` (또는 `Root`) 하나만 존재.
+*   **Multi Model**: `Models["Hero"]`, `Models["Enemy"]` 등 다수 존재.
+
+```lua
+type ModelSkeletonData = {
+    Tracks: { [string]: TrackData } -- Property Tracks (e.g. "Head.CFrame")
+}
+```
+
+#### Clips
+`{ AudioClip | AnimationClip }`
+이 데이터 내부에 포함된 하위 클립들입니다.
+*   **Global Level**: 전체 시퀀스 레벨에서 실행되는 클립 (예: 카메라, 환경 효과)
+*   **Model Level**: 특정 모델 전체에 적용되는 클립 (예: 걷기 사이클 파일 통째로 삽입)
+*   **Property Level**: 특정 속성 변화를 위해 삽입된 클립
+
+```lua
+type AnimationClip = {
+    Type: "Animation",
+    Data: AnimationData | ObjectValue<AnimationData>, -- Direct or Reference
+    Scope: "Global" | "Model" | "Object" | "Property", -- Where it applies
+    StartTime: number,
+    Duration: number,
+    Speed: number,
+    Weight: number,
+    Offset: number -- Start offset within the source clip
+}
+```
 
 ## Constructors
 
 #### fromTable
 (data: table, params: AnimationDataParams?) -> (AnimationData)
-
 Raw 테이블 데이터로부터 AnimationData 인스턴스를 생성합니다.
-
-#### fromInstance
-(root: Folder, params: AnimationDataParams?) -> (AnimationData)
-
-로블록스 인스턴스(Folder/ObjectValue 구조)로부터 데이터를 파싱하여 생성합니다.
-
 
 ## Methods
 
+#### GetModelData
+(modelName: string?) -> (ModelSkeletonData?)
+특정 모델의 데이터를 가져옵니다. `modelName`이 없으면 기본 모델 데이터를 반환 시도합니다.
+
 #### FindTrackData
-(trackName: string) -> (table?)
-
-특정 트랙 이름에 해당하는 채널 데이터를 반환합니다.
-
-#### GetTrackData
-(trackName: string) -> (table)
-
-특정 트랙 이름에 해당하는 채널 데이터를 반환하거나, 없으면 에러를 발생시킵니다.
-
-#### Destroy
-() -> ()
-
-데이터 객체의 메모리를 명시적으로 해제해야 할 경우 사용합니다.
+(modelName: string, trackName: string) -> (table?)
+특정 모델의 특정 트랙 데이터를 반환합니다.

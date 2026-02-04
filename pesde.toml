@@ -25,5 +25,8 @@ lune = "^0.10.2"
 [dependencies]
 TypeInfos = { repo = "https://github.com/StoryBakery/TypeInfos", rev = "a7362072a5afd85bee6583f05398a09438a039b5" }
 LinearInterpolation = { repo = "https://github.com/StoryBakery/LinearInterpolation", rev = "c522819b5515edb45f1518244252f58c8f9e05ee" }
-MathUtil = { repo = "https://github.com/StoryBakery/MathUtil", rev = "1d494fd68f7dbbe31d69aea05395d965623b6167" }
+MathUtil = { repo = "https://github.com/StoryBakery/MathUtil", rev = "f4889bc7b605e4f4bc1acb53997bb48dcb15114d" }
+BezierCurve = { repo = "https://github.com/StoryBakery/BezierCurve", rev = "bc69222f5c6bd59337815c94446eabe07c02515a" }
+BezierInterpolator = { repo = "https://github.com/StoryBakery/BezierInterpolator", rev = "71b5773558c918d0ee15d000bbcf95ac6505f433" }
+ValueByPriority = { repo = "https://github.com/StoryBakery/ValueByPriority", rev = "f4ca970605f7bbce20fb12e9ae1d0e2226c3a553" }
 
