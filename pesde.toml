@@ -15,7 +15,7 @@ sourcemap_generator = ".pesde/scripts/sourcemap_generator.luau"
 [dev_dependencies]
 scripts = { name = "pesde/scripts_rojo", version = "^0.2.0", target = "lune" }
 rojo = { name = "pesde/rojo", version = "^7.5.1", target = "lune" }
-setup-project-configs = { repo = "https://github.com/StoryBakery/setup-project-configs", rev = "8e77c9722c25b0a4ea6ed1415ab18fc8db2ff9e2" }
+setup-project-configs = { repo = "https://github.com/StoryBakery/setup-project-configs", rev = "dfe57071d478cd8744be9bd125a0f11d2b04b742" }
 pesde-gitrev = { repo = "https://github.com/StoryBakery/pesde-gitrev", rev = "a2d6f1e71ac6264ff2b48fd2178271f80135772e" }
 
 [engines]
@@ -24,9 +24,8 @@ lune = "^0.10.2"
 
 [dependencies]
 TypeInfos = { repo = "https://github.com/StoryBakery/TypeInfos", rev = "a7362072a5afd85bee6583f05398a09438a039b5" }
-LinearInterpolation = { repo = "https://github.com/StoryBakery/LinearInterpolation", rev = "c522819b5515edb45f1518244252f58c8f9e05ee" }
-MathUtil = { repo = "https://github.com/StoryBakery/MathUtil", rev = "f4889bc7b605e4f4bc1acb53997bb48dcb15114d" }
-BezierCurve = { repo = "https://github.com/StoryBakery/BezierCurve", rev = "bc69222f5c6bd59337815c94446eabe07c02515a" }
-BezierInterpolator = { repo = "https://github.com/StoryBakery/BezierInterpolator", rev = "71b5773558c918d0ee15d000bbcf95ac6505f433" }
-ValueByPriority = { repo = "https://github.com/StoryBakery/ValueByPriority", rev = "f4ca970605f7bbce20fb12e9ae1d0e2226c3a553" }
-
+LinearInterpolation = { repo = "https://github.com/StoryBakery/LinearInterpolation", rev = "4b5dfbedba536567f3d494e519ddbb71360dbf5a" }
+MathUtil = { repo = "https://github.com/StoryBakery/MathUtil", rev = "273845db3ca6be087a8ba9ae6505a234d0bd5683" }
+BezierCurve = { repo = "https://github.com/StoryBakery/BezierCurve", rev = "bc70481913a8ccdf9df56f7dd7069d15a1d470af" }
+BezierInterpolator = { repo = "https://github.com/StoryBakery/BezierInterpolator", rev = "a70b8664beb5ddb3b74f5247a5608ccb8805d7ed" }
+ValueByPriority = { repo = "https://github.com/StoryBakery/ValueByPriority", rev = "da086a9063f58fe5a6fd056278290bb61a1d9dfa" }
