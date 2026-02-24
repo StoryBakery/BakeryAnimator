@@ -1,7 +1,5 @@
 ## 개요
 
-**Inherits:** [BaseBakeryObject](./base-bakery-object.md)
-
 특정 프레임에서의 값과 보간 정보를 담는 최소 단위입니다.
 **Data Point** 역할을 수행합니다.
 

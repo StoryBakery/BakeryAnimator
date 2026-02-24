@@ -1,7 +1,5 @@
 ## 개요
 
-**Inherits:** [BaseBakeryObject](./base-bakery-object.md)
-
 애니메이션 전체를 총괄하는 루트 컨테이너입니다.
 주로 `ModuleScript` 래퍼나 `Folder`로 존재합니다.
 

@@ -1,4 +1,4 @@
-name = "story_bakery/blender_to_roblox_animation"
+name = "storybakery/blender_to_roblox_animation"
 version = "0.1.0"
 license = "MIT"
 
@@ -15,17 +15,15 @@ sourcemap_generator = ".pesde/scripts/sourcemap_generator.luau"
 [dev_dependencies]
 scripts = { name = "pesde/scripts_rojo", version = "^0.2.0", target = "lune" }
 rojo = { name = "pesde/rojo", version = "^7.5.1", target = "lune" }
-setup-project-configs = { repo = "https://github.com/StoryBakery/setup-project-configs", rev = "dfe57071d478cd8744be9bd125a0f11d2b04b742" }
-pesde-gitrev = { repo = "https://github.com/StoryBakery/pesde-gitrev", rev = "a2d6f1e71ac6264ff2b48fd2178271f80135772e" }
+
 
 [engines]
 pesde = "^0.7.0"
 lune = "^0.10.2"
 
 [dependencies]
-TypeInfos = { repo = "https://github.com/StoryBakery/TypeInfos", rev = "a7362072a5afd85bee6583f05398a09438a039b5" }
-LinearInterpolation = { repo = "https://github.com/StoryBakery/LinearInterpolation", rev = "4b5dfbedba536567f3d494e519ddbb71360dbf5a" }
-MathUtil = { repo = "https://github.com/StoryBakery/MathUtil", rev = "273845db3ca6be087a8ba9ae6505a234d0bd5683" }
-BezierCurve = { repo = "https://github.com/StoryBakery/BezierCurve", rev = "bc70481913a8ccdf9df56f7dd7069d15a1d470af" }
-BezierInterpolator = { repo = "https://github.com/StoryBakery/BezierInterpolator", rev = "a70b8664beb5ddb3b74f5247a5608ccb8805d7ed" }
-ValueByPriority = { repo = "https://github.com/StoryBakery/ValueByPriority", rev = "da086a9063f58fe5a6fd056278290bb61a1d9dfa" }
+TypeInfos = { repo = "https://github.com/StoryBakery/TypeInfos", rev = "v0.1.0" }
+LinearInterpolation = { repo = "https://github.com/StoryBakery/LinearInterpolation", rev = "v0.1.0" }
+MathUtil = { repo = "https://github.com/StoryBakery/MathUtil", rev = "v0.1.0" }
+BezierUtil = { repo = "https://github.com/StoryBakery/BezierUtil", rev = "v0.1.0" }
+ValueByPriority = { repo = "https://github.com/StoryBakery/ValueByPriority", rev = "v0.1.0" }

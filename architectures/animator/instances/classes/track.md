@@ -1,7 +1,5 @@
 ## 개요
 
-**Inherits:** [BaseBakeryObject](./base-bakery-object.md)
-
 특정 인스턴스(Part, Model) 하나에 대응되는 트랙입니다.
 **Object Identity** 역할을 수행합니다.
 

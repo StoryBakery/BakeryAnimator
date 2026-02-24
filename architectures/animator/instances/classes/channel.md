@@ -1,8 +1,5 @@
 ## 개요
 
-Inherits:
-[BaseBakeryObject](./base-bakery-object.md)
-
 특정 속성(Property) 하나의 시간 흐름에 따른 변화를 정의합니다.
 **Value Timeline** 역할을 수행합니다.
 
