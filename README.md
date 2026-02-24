@@ -1,1 +1,5 @@
-# blender-to-roblox-animation
+
+
+블렌더 처럼 GPL 라이선스 입니다.
+
+애니메이터로 만든 애니메이션은 자유롭게 사용 가능합니다.
