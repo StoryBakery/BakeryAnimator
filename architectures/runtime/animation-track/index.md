@@ -1,0 +1,191 @@
+---
+title: AnimationTrack
+---
+
+`AnimationData`를 실제 로블록스 바인딩 그룹 대상에 바인딩하여 재생하는 **런타임 실행기**입니다.
+
+단일 `BindingGroup` 범위에만 사용됩니다.
+
+내부 파이프라인은 다음 순서로 동작합니다.
+
+1. **Player**: 시간/재생 상태를 갱신합니다.
+1. **Evaluator**: 현재 시간에서 `PropertyTrack`의 활성 `Section`들을 평가/합성해 포즈를 계산합니다.
+1. **Applier**: 계산된 포즈를 실제 `Instance`에 적용합니다.
+
+## Constructors
+
+### fromData
+
+```lua
+(data: AnimationData, targetBindingGroup: Instance, params: AnimationTrackParams?) -> (AnimationTrack)
+```
+
+단일 바인딩 그룹(`targetBindingGroup`)을 대상으로 하는 애니메이션 트랙을 생성합니다.
+통합 데이터(`AnimationData`)에서 `targetBindingGroup`에 대응되는 바인딩 그룹 데이터를 바인딩해 사용합니다.
+
+- `data`: 통합 애니메이션 데이터.
+- `targetBindingGroup`: 애니메이션을 적용할 실제 대상 `Instance`입니다.
+  (예: `Model`, `Folder`)
+
+```lua
+AnimationTrackParams = {
+    Speed: number?,
+    Weight: number?,
+    Priority: number?,
+    PoseMode: AnimationPoseMode?,
+}
+```
+
+### fromFile
+
+```lua
+(file: AnimationFile, targetBindingGroup: Instance, params: AnimationTrackParams?) -> (AnimationTrack)
+```
+
+## Properties
+
+### IsDestroyed
+
+`boolean`
+
+트랙 인스턴스의 파괴 여부입니다.
+
+### Maid
+
+`Maid`
+
+트랙 인스턴스의 수명 관리를 담당하는 Maid 인스턴스입니다.
+
+### Data
+
+`AnimationData`
+
+재생 중인 원본 애니메이션 데이터입니다.
+
+### TimePosition
+
+`number`
+
+현재 재생 시간 (초) 입니다.
+
+### Speed
+
+`number`
+
+재생 속도 배율입니다. 기본값은 `1.0`입니다.
+
+### Weight
+
+`number`
+
+애니메이션의 영향력(가중치)입니다. $[0.0, 1.0]$ 사이의 값을 가집니다.
+여러 트랙이 섞일 때 이 값이 클수록 더 강하게 표현됩니다.
+
+### BlendMode
+
+`AnimationBlendMode`
+`@default WeightedSet`
+
+이 트랙이 **레이어 내부에서** 다른 트랙들과 합성되는 방식입니다.
+
+- `WeightedSet`: 가중치(Weight) 비율에 따라 값을 적용합니다.
+  - 단일 트랙일 경우 Weight만큼 하위 레이어를 덮어씁니다. (Alpha Blend)
+  - 같은 우선순위에 여러 트랙이 있을 경우, 가중치 비율대로 섞입니다. (BlendSpace)
+- `Add`: 하위 레이어 결과값 위에 현재 값을 더합니다. (반동, 흔들림 등)
+- `Multiply`: 하위 레이어 결과값에 현재 값을 곱합니다.
+
+### PoseMode
+
+`AnimationPoseMode`
+`@default Absolute`
+
+포즈를 어떤 기준으로 평가할지 정의합니다.
+
+- `Absolute`: 키프레임 값을 절대값으로 평가합니다.
+- `Relative`: `ReferencePose` 대비 변화량(Delta)으로 평가합니다.
+
+`Relative`는 블렌드 함수가 아니라 평가 단계 동작입니다.
+
+### IsPlaying
+
+`boolean`
+
+현재 재생 중인지 여부입니다.
+
+### Priority
+
+`number`
+`@default 0`
+
+**레이어 내부에서의** 연산 우선순위입니다.
+`ValueByPriority` 노드의 우선순위로 매핑됩니다. 높은 우선순위의 트랙이 나중에 연산되어 결과를 덮어쓰거나 합성합니다.
+
+### Looped
+
+`boolean`
+`@default false`
+
+`Data`의 설정을 덮어쓰고 반복 여부를 실시간으로 제어합니다.
+
+### ReferencePose
+
+`table?`
+
+`PoseMode`가 `Relative`일 때 기준이 되는 포즈입니다.
+미지정 시 트랙 시작 시점 포즈를 기준으로 사용합니다.
+
+## Methods
+
+### Destroy
+
+() -> ()
+
+트랙을 파괴하고 관련 리소스를 정리합니다.
+
+### Play
+
+(fadeTime: number?, weight: number?, speed: number?) -> ()
+
+애니메이션 재생을 시작하거나 재개합니다.
+
+- `fadeTime`: 지정한 시간(초) 동안 Weight를 0에서 목표값까지 부드럽게 올립니다. (Fade In)
+- `weight`: 재생 시 목표 Weight입니다.
+- `speed`: 재생 속도입니다.
+
+### Stop
+
+(fadeTime: number?) -> ()
+
+애니메이션을 정지합니다.
+
+- `fadeTime`: 지정한 시간(초) 동안 Weight를 현재 값에서 0으로 부드럽게 내린 후 정지합니다. (Fade Out)
+
+### AdjustWeight
+
+(targetWeight: number, fadeTime: number?) -> ()
+
+실행 중에 트랙의 가중치를 부드럽게 변경합니다. 다른 동작과 섞이거나 서서히 사라지게 할 때 사용합니다.
+
+### SetBlendMode
+
+`(mode: AnimationBlendMode) -> ()`
+
+합성 모드를 변경합니다.
+
+### SetPoseMode
+
+`(mode: AnimationPoseMode) -> ()`
+
+포즈 평가 기준을 변경합니다.
+
+### SetReferencePose
+
+`(pose: table?) -> ()`
+
+`Relative` 평가 기준 포즈를 설정합니다.
+
+### SetTimePosition
+
+(time: number) -> ()
+
+현재 진행 시간을 설정하고 즉시 포즈를 업데이트합니다.

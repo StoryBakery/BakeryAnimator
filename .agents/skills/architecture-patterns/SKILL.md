@@ -21,14 +21,14 @@ Master proven backend architecture patterns including Clean Architecture, Hexago
 
 ### 1. Clean Architecture (Uncle Bob)
 
-**Layers (dependency flows inward):**
+**Layers (dependency flows inward)**:
 
 - **Entities**: Core business models
 - **Use Cases**: Application business rules
 - **Interface Adapters**: Controllers, presenters, gateways
 - **Frameworks & Drivers**: UI, database, external services
 
-**Key Principles:**
+**Key Principles**:
 
 - Dependencies point inward
 - Inner layers know nothing about outer layers
@@ -37,13 +37,13 @@ Master proven backend architecture patterns including Clean Architecture, Hexago
 
 ### 2. Hexagonal Architecture (Ports and Adapters)
 
-**Components:**
+**Components**:
 
 - **Domain Core**: Business logic
 - **Ports**: Interfaces defining interactions
 - **Adapters**: Implementations of ports (database, REST, message queue)
 
-**Benefits:**
+**Benefits**:
 
 - Swap implementations easily (mock for testing)
 - Technology-agnostic core
@@ -51,13 +51,13 @@ Master proven backend architecture patterns including Clean Architecture, Hexago
 
 ### 3. Domain-Driven Design (DDD)
 
-**Strategic Patterns:**
+**Strategic Patterns**:
 
 - **Bounded Contexts**: Separate models for different domains
 - **Context Mapping**: How contexts relate
 - **Ubiquitous Language**: Shared terminology
 
-**Tactical Patterns:**
+**Tactical Patterns**:
 
 - **Entities**: Objects with identity
 - **Value Objects**: Immutable objects defined by attributes

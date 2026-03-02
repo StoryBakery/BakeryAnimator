@@ -1,9 +1,13 @@
+---
+title: Bezier Handle Type
+---
 
 ## HandleType
 
 베지어 핸들의 동작 방식을 정의합니다. (Blender 호환)
 
 #### AutoClamped
+
 `@default`
 
 - 키프레임 모양: 원형
