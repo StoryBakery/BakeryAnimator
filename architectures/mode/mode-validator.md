@@ -31,6 +31,17 @@ type ValidationResult = {
 - `DetectBindings`
 - `DetectProperties`
 
+### 선택 함수
+
+- `DescribeBindingUi`
+- `DescribePropertyUi`
+- `BuildRuntimeBehaviors`
+- `SimulateEditorState`
+- `ResolveBindingTag`
+- `ResolveEventEndpoint`
+
+선택 함수가 존재하면 반환값 계약(`result, diagnostics`)을 검사합니다.
+
 ### ID 충돌
 
 이미 등록된 `Manifest.Id`와 중복되는지 검사합니다.

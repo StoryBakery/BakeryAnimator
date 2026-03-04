@@ -2,28 +2,51 @@
 title: AnimationTrack
 ---
 
-`AnimationData`를 실제 로블록스 바인딩 그룹 대상에 바인딩하여 재생하는 **런타임 실행기**입니다.
+`LevelSequenceData`를 실제 로블록스 바인딩 그룹 대상에 바인딩하여 재생하는 **런타임 실행기**입니다.
+재생 시간/가중치 같은 상태와 함께, 트랙 인스턴스별 파라미터 상태를 관리합니다.
 
 단일 `BindingGroup` 범위에만 사용됩니다.
+
+상세 설계:
+
+- [Section Evaluator](./section-evaluator.md)
 
 내부 파이프라인은 다음 순서로 동작합니다.
 
 1. **Player**: 시간/재생 상태를 갱신합니다.
+1. **Parameter Resolver**: `GetParameterDefaults()`와 런타임 오버라이드를 병합합니다.
 1. **Evaluator**: 현재 시간에서 `PropertyTrack`의 활성 `Section`들을 평가/합성해 포즈를 계산합니다.
+1. **Constraint Solver**: 제약 트랙 결과를 합성하여 최종 포즈를 보정합니다.
 1. **Applier**: 계산된 포즈를 실제 `Instance`에 적용합니다.
+1. **Event Dispatcher**: 해당 프레임의 이벤트 키를 엔드포인트로 디스패치합니다.
+
+## Supported Track Types
+
+- `PropertyTrack`: 속성 값 샘플링과 섹션 블렌딩.
+- `EventTrack`: 노티파이/게임플레이 이벤트 디스패치.
+- `ConstraintTrack`: 바인딩 간 제약(Parent, LookAt 등) 적용.
+
+## Parameter Runtime Model
+
+- 파라미터는 `AnimationTrack` 인스턴스 상태입니다.
+- 같은 데이터 자산을 여러 트랙에서 재생해도 파라미터 값은 서로 공유하지 않습니다.
+- 파라미터 기본값은 `AnimationTrack:GetParameterDefaults()`로 조회합니다.
+- 파라미터 기본값은 애니메이션 데이터 파일에 직렬화하지 않습니다.
+- `GetParameter`는 오버라이드 값을 우선하고, 없으면 기본값을 조회합니다.
+- 기본값도 없으면 `nil`을 반환합니다.
 
 ## Constructors
 
 ### fromData
 
 ```lua
-(data: AnimationData, targetBindingGroup: Instance, params: AnimationTrackParams?) -> (AnimationTrack)
+(data: LevelSequenceData, targetBindingGroup: Instance, params: AnimationTrackParams?) -> (AnimationTrack)
 ```
 
 단일 바인딩 그룹(`targetBindingGroup`)을 대상으로 하는 애니메이션 트랙을 생성합니다.
-통합 데이터(`AnimationData`)에서 `targetBindingGroup`에 대응되는 바인딩 그룹 데이터를 바인딩해 사용합니다.
+시퀀스 데이터(`LevelSequenceData`)에서 `targetBindingGroup`에 대응되는 바인딩 그룹 데이터를 바인딩해 사용합니다.
 
-- `data`: 통합 애니메이션 데이터.
+- `data`: 시퀀스 애니메이션 데이터.
 - `targetBindingGroup`: 애니메이션을 적용할 실제 대상 `Instance`입니다.
   (예: `Model`, `Folder`)
 
@@ -33,6 +56,7 @@ AnimationTrackParams = {
     Weight: number?,
     Priority: number?,
     PoseMode: AnimationPoseMode?,
+    InitialParameters: {[string]: any}?,
 }
 ```
 
@@ -58,7 +82,7 @@ AnimationTrackParams = {
 
 ### Data
 
-`AnimationData`
+`LevelSequenceData`
 
 재생 중인 원본 애니메이션 데이터입니다.
 
@@ -134,6 +158,12 @@ AnimationTrackParams = {
 `PoseMode`가 `Relative`일 때 기준이 되는 포즈입니다.
 미지정 시 트랙 시작 시점 포즈를 기준으로 사용합니다.
 
+### ParametersByKey
+
+`{[string]: any}`
+
+현재 트랙 인스턴스의 파라미터 오버라이드 값입니다.
+
 ## Methods
 
 ### Destroy
@@ -189,3 +219,35 @@ AnimationTrackParams = {
 (time: number) -> ()
 
 현재 진행 시간을 설정하고 즉시 포즈를 업데이트합니다.
+
+### SetParameter
+
+`(key: string, value: any) -> ()`
+
+파라미터 오버라이드 값을 설정합니다.
+
+### GetParameter
+
+`(key: string) -> (any?)`
+
+현재 파라미터 값을 조회합니다.
+오버라이드가 있으면 해당 값을 반환하고, 없으면 기본값을 반환합니다.
+
+### GetParameterDefaults
+
+`() -> ({[string]: any})`
+
+트랙이 참조하는 기본 파라미터 맵을 반환합니다.
+Roblox `AnimationTrack:GetParameterDefaults()`와 동일 의미입니다.
+
+### ResetParameter
+
+`(key: string) -> ()`
+
+지정한 키의 오버라이드를 제거하고 기본값으로 복귀시킵니다.
+
+### ResetParameters
+
+`() -> ()`
+
+모든 파라미터 오버라이드를 제거합니다.

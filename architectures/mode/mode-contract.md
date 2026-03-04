@@ -9,6 +9,7 @@ title: ModeContract
 - `ModeDefinition`의 필수/선택 항목을 고정합니다.
 - 생성자 기반 모드(`new`)와 테이블 기반 모드를 같은 타입으로 수용합니다.
 - 레지스트리, 팩토리, 검증기가 같은 타입을 참조하도록 강제합니다.
+- 모드별 UI 표시 보정 계약(`DescribeBindingUi`, `DescribePropertyUi`)을 고정합니다.
 
 ## API
 
@@ -73,6 +74,45 @@ title: ModeContract
 }
 ```
 
+### ModeBindingUi
+
+바인딩 트리/아웃라이너 표시를 모드가 보정할 때 사용하는 UI 메타데이터입니다.
+표시 이름, 정렬, 숨김 여부 같은 편집기 표시 정보만 다루며 실행 로직은 바꾸지 않습니다.
+
+```lua
+{
+    DisplayName: string?,
+    Description: string?,
+    Group: string?,
+    Order: number?,
+    Hidden: boolean?,
+}
+```
+
+### ModePropertyUi
+
+프로퍼티 패널 표시를 모드가 보정할 때 사용하는 UI 메타데이터입니다.
+라벨, 단위, 읽기 전용 여부 같은 편집기 표시 정보를 제공합니다.
+
+```lua
+{
+    DisplayName: string?,
+    Description: string?,
+    Group: string?,
+    Unit: string?,
+    Order: number?,
+    Hidden: boolean?,
+    ReadOnly: boolean?,
+}
+```
+
+### ModeEventEndpoint
+
+이벤트 트랙이 호출할 엔드포인트 함수 타입입니다.
+`EventTrack`의 엔드포인트 ID를 런타임 함수로 해석할 때 사용합니다.
+
+`(payload: table?) -> ()`
+
 ### ModeDefinition
 
 모드 구현체가 반드시 따라야 하는 핵심 계약입니다.
@@ -90,8 +130,12 @@ title: ModeContract
     CanHandle: (entryPoint: Instance, context: ModeContext) -> (boolean),
     DetectBindings: (entryPoint: Instance, context: ModeContext) -> ({ModeBinding}, {ModeDiagnostic}),
     DetectProperties: (binding: ModeBinding, context: ModeContext) -> ({ModePropertyChannel}, {ModeDiagnostic}),
+    DescribeBindingUi: ((binding: ModeBinding, context: ModeContext) -> (ModeBindingUi?))?,
+    DescribePropertyUi: ((binding: ModeBinding, channel: ModePropertyChannel, context: ModeContext) -> (ModePropertyUi?))?,
     BuildRuntimeBehaviors: ((binding: ModeBinding, context: ModeContext) -> ({any}, {ModeDiagnostic}))?,
     SimulateEditorState: ((binding: ModeBinding, context: ModeContext) -> (table?))?,
+    ResolveBindingTag: ((tag: string, context: ModeContext) -> ({ModeBinding}, {ModeDiagnostic}))?,
+    ResolveEventEndpoint: ((endpointId: string, context: ModeContext) -> (ModeEventEndpoint?, {ModeDiagnostic}))?,
 }
 ```
 

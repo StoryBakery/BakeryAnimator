@@ -15,49 +15,49 @@ Easing 에 대해 다루는 설계도입니다.
 
 ## EasingStyle
 
-#### Linear
+### Linear
 
 `@default`
 
 - InterpolationLineColor: "#637264ff"
 
-#### Sine
+### Sine
 
 - InterpolationLineColor: "#3aff3dff"
 
-#### Back
+### Back
 
 - InterpolationLineColor: "#6C5CE7"
 
-#### Quad
+### Quad
 
 - InterpolationLineColor: "#00B894"
 
-#### Quart
+### Quart
 
 - InterpolationLineColor: "#FAB1A0"
 
-#### Quint
+### Quint
 
 - InterpolationLineColor: "#FF7675"
 
-#### Bounce
+### Bounce
 
 - InterpolationLineColor: "#FDCB6E"
 
-#### Elastic
+### Elastic
 
 - InterpolationLineColor: "#FD79A8"
 
-#### Exponential
+### Exponential
 
 - InterpolationLineColor: "#D63031"
 
-#### Circular
+### Circular
 
 - InterpolationLineColor: "#74B9FF"
 
-#### Cubic
+### Cubic
 
 - InterpolationLineColor: "#00CEC9"
 
@@ -65,10 +65,10 @@ Easing 에 대해 다루는 설계도입니다.
 
 보간의 적용 방향을 정의합니다.
 
-#### In
+### In
 
-#### Out
+### Out
 
-#### InOut
+### InOut
 
-#### OutIn
+### OutIn

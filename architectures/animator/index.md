@@ -4,6 +4,20 @@ title: Animator Architecture
 
 **Vide** 프레임워크를 기반으로 구축된 확장 가능한 에디터 아키텍처입니다.
 
+## 레이어 기준
+
+설계 기준은 레이어별로 분리합니다.
+
+- 에디터 UI/UX는 Blender 편집 경험을 기준으로 설계합니다.
+- 데이터 구조는 Unreal Engine 시퀀스 계층을 기준으로 설계합니다.
+- 실행 엔진과 적용 제약은 Roblox 런타임 규칙을 기준으로 설계합니다.
+
+충돌 시 우선순위는 다음과 같습니다.
+
+1. Roblox 실행 가능성
+1. 데이터 구조 일관성
+1. 에디터 UX 편의성
+
 ## Core Systems
 
 ### Plugin System (Extensions)

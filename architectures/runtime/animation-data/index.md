@@ -2,7 +2,58 @@
 title: AnimationData
 ---
 
-애니메이션의 "어떻게 움직여야 하는가"에 대한 정보만을 담으며, 런타임 상태를 가지지 않습니다.
+`AnimationData`는 런타임 애니메이션 자산의 공통 진입 타입입니다.
+
+Unreal Engine 구조에 맞춰 `LevelSequenceData`와 `AnimationSequenceData`를 분리하고,
+두 타입은 공통 인터페이스(`AnimationAssetData`)만 공유합니다.
+
+## 레이어 기준
+
+`AnimationData` 계층은 다음 원칙을 따릅니다.
+
+- 에디터 표시와 조작 경험은 Blender 기준 UX를 따릅니다.
+- 저장/평가 구조는 Unreal Engine 시퀀스 계층을 따릅니다.
+- 최종 동작은 Roblox 런타임 제약을 우선합니다.
+
+충돌 시 우선순위:
+
+1. Roblox 실행 가능성
+1. 데이터 구조 일관성
+1. 에디터 UX 편의성
+
+## 설계 방향
+
+- `LevelSequenceData`: 바인딩/트랙/섹션 기반 시퀀서 데이터
+- `AnimationSequenceData`: 본/곡선 기반 애니메이션 시퀀스 데이터
+- `AnimationData`: 두 concrete 타입의 유니온
+- `AnimationAssetData`: 두 concrete 타입이 공유하는 최소 공통 인터페이스
+
+## 공통 인터페이스
+
+### AnimationAssetData
+
+```lua
+{
+    DataType: "LevelSequence" | "AnimationSequence",
+    Name: string,
+    Duration: number,
+    FrameRate: number,
+    Tags: {string}?,
+}
+```
+
+- `DataType`은 concrete 타입 분기 키입니다.
+- 공통 인터페이스는 최소 필드만 가지며, 상세 필드는 각 concrete 타입이 확장합니다.
+
+## Concrete Types
+
+- [LevelSequenceData](./level-sequence-data.md)
+- [AnimationSequenceData](./animation-sequence-data.md)
+- [BindingGroupAnimationData](./binding-group-animation-data.md)
+
+```lua
+type AnimationData = LevelSequenceData | AnimationSequenceData
+```
 
 ## Constructors
 
@@ -10,143 +61,33 @@ title: AnimationData
 
 `(data: table, params: AnimationDataParams?) -> (AnimationData)`
 
-Raw 테이블 데이터로부터 AnimationData 인스턴스를 생성합니다.
+`data.DataType`을 기준으로 concrete 타입을 생성합니다.
 
 ### fromInstance
 
-`(animationFile: AnimationFile, params: AnimationDataParams) -> (AnimationData)`
+`(animationFile: AnimationFile, params: AnimationDataParams?) -> (AnimationData)`
 
-Instance로부터 AnimationData 인스턴스를 생성합니다.
-
-## Properties
-
-### Name
-
-`string`
-
-애니메이션의 이름입니다.
-주로 가져와진 AnimationFile의 이름과 같습니다.
-
-### FrameRate
-
-`number`
-
-초당 프레임 수 (FPS) 입니다.
-
-### Looped
-
-`boolean`
-
-애니메이션 반복 재생 여부입니다.
-
-### Priority
-
-`number`
-
-애니메이션의 우선순위입니다.
-
-### Tags
-
-`{string}`
-
-애니메이션에 할당된 식별 태그 목록입니다.
-
-### Duration
-
-`number`
-
-애니메이션의 총 길이 (초 단위) 입니다.
-
-### BindingGroupAnimationDatasByKey
-
-`{ [string]: BindingGroupAnimationData }`
-
-이 애니메이션에 등장하는 바인딩 그룹 데이터 맵입니다.
-
-- **Single BindingGroup**: `BindingGroupAnimationDatasByKey["Root"]`
-- **Multi BindingGroup**
-  - `BindingGroupAnimationDatasByKey["Hero"]`
-  - `BindingGroupAnimationDatasByKey["Enemy"]`
-  등 다수 존재.
-
-바인딩 그룹을 사용하지 않는 경우에도 런타임에서 암묵적 `"Root"` 그룹으로 정규화합니다.
-
-### Clips
-
-`{ AudioClip | AnimationClip }`
-
-이 데이터 내부에 포함된 하위 클립들입니다.
-
-- **Global Level**: 전체 시퀀스 레벨에서 실행되는 클립 (예: 카메라, 환경 효과)
-- **BindingGroup Level**: 특정 바인딩 그룹 전체에 적용되는 클립 (예: 걷기 사이클 파일 통째로 삽입)
-- **Property Level**: 특정 속성 변화를 위해 삽입된 클립
-
-```lua
-type AnimationNotify = {
-    Name: string,
-    Time: number,
-    Payload: table?,
-}
-
-type SyncMarker = {
-    Name: string,
-    Time: number,
-}
-
-type RootMotionData = {
-    Enabled: boolean,
-    Space: "BindingGroup" | "World",
-}
-
-type AnimationClip = {
-    Type: "Animation" | "Audio",
-    Data: AnimationData | ObjectValue<AnimationData>, -- Direct or Reference
-    Scope: "Global" | "BindingGroup" | "Binding" | "Property", -- Where it applies
-    StartTime: number,
-    Duration: number,
-    Speed: number,
-    Weight: number,
-    Offset: number, -- Start offset within the source clip
-    Notifies: {AnimationNotify}?,
-    SyncMarkers: {SyncMarker}?,
-    RootMotion: RootMotionData?,
-    Curves: {[string]: {Time: number, Value: number}}?,
-}
-```
+인스턴스 메타(`DataType`)를 기준으로 concrete 타입을 생성합니다.
 
 ## Methods
 
-### BindingGroup Methods
+### Type Guards
 
-#### GetBindingGroupData
+#### IsLevelSequenceData
 
-`(bindingGroupKey: string?) -> (BindingGroupAnimationData?)`
+`(data: AnimationData) -> (boolean)`
 
-특정 바인딩 그룹의 데이터를 가져옵니다.
-`bindingGroupKey`가 없으면 기본 바인딩 그룹 데이터를 반환 시도합니다.
-그룹 없는 데이터는 `"Root"`를 기본으로 반환합니다.
+`data.DataType == "LevelSequence"` 여부를 반환합니다.
 
-### IsSingleBindingGroup
+#### IsAnimationSequenceData
 
-`()->(boolean)`
+`(data: AnimationData) -> (boolean)`
 
-바인딩 그룹이 하나인지 여부를 반환합니다.
+`data.DataType == "AnimationSequence"` 여부를 반환합니다.
 
-### Track Methods
+## UE 정렬 메모
 
-#### FindTrackData
-
-`(bindingGroupKey: string, trackName: string) -> (table?)`
-
-특정 바인딩 그룹의 특정 트랙 데이터를 반환합니다.
-반환 트랙 데이터 내부는 `PropertyTrack -> Section -> Channel -> Keyframe` 구조를 따릅니다.
-
-#### FindTrackDataByBindingId
-
-`(bindingGroupKey: string, bindingId: string) -> (table?)`
-
-`BindingId` 기준으로 트랙 데이터를 반환합니다.
-`trackName` 변경이 있어도 안정적으로 바인딩할 수 있습니다.
-반환 트랙 데이터 내부는 `PropertyTrack -> Section -> Channel -> Keyframe` 구조를 따릅니다.
-
-`GetTrackData`도 있습니다.
+- Unreal도 `LevelSequence` 계열(`UMovieSceneSequence`)과
+  `AnimationSequence` 계열(`UAnimationAsset`)을 분리합니다.
+- 따라서 단일 거대 데이터보다
+  **분리된 concrete 타입 + 공통 최소 인터페이스**가 더 UE 구조에 가깝습니다.

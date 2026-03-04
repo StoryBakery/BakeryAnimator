@@ -10,6 +10,8 @@ title: 본
 
 ### DisplayAs
 
+기본값에서 동기화시, 블렌더의 Display As 속성으로 덮어씌어집니다.
+
 기본:
 ![alt text](image.png)
 
@@ -22,4 +24,8 @@ title: 본
 블렌더에서 동기화시 Envelope 는 B-Bone 으로 대체됩니다
 로블록스에서 Envelope 는 필요없기 때문입니다.
 
+### CustomShape
+
 Custom-Shape 는 MeshPart 혹은 WireHandleAdornment 로 구현됩니다
+
+### BoneColors

@@ -1,24 +1,31 @@
 ---
-title: Keyframe Class
+title: Keyframe
 ---
 
 **Data Point** 역할을 수행합니다.
 
 ## Properties
 
-#### Frame
+### Frame
 
 `number`
 
 프레임 위치입니다.
 
-#### Value
+### Time
+
+`number`
+
+초 단위 시간입니다.
+`Frame / FrameRate`와 동일한 시각을 가리킵니다.
+
+### Value
 
 `any`
 
 해당 프레임의 값입니다.
 
-#### InterpolationMode
+### InterpolationMode
 
 `InterpolationMode`
 
@@ -28,7 +35,7 @@ title: Keyframe Class
 - `"Constant"`, `"Linear"`, `"Bezier"` 중 하나입니다.
 - `string`, `boolean` 등 불연속 타입은 `"Constant"`만 허용됩니다.
 
-#### EasingStyle
+### EasingStyle
 
 `EasingStyle`
 
@@ -36,7 +43,7 @@ title: Keyframe Class
 사용되는 스타일입니다.
 (`Bezier` 모드일 경우 핸들 값에 의해 곡선이 결정되므로 무시될 수 있습니다.)
 
-#### EasingDirection
+### EasingDirection
 
 `EasingDirection`
 
@@ -50,28 +57,28 @@ title: Keyframe Class
 [`BezierInterpolator`](https://github.com/StoryBakery/BezierInterpolator)
 로직을 따릅니다.
 
-#### LeftHandleType
+### LeftHandleType
 
 `HandleType`
 
 [HandleType](../../keyframe/interpolation/bezier/handle.md#handletype) 참조.
 좌측(들어오는) 핸들의 타입입니다. (`Automatic`, `Free` 등)
 
-#### LeftHandleValue
+### LeftHandleValue
 
 `any`
 
 좌측 핸들의 값입니다. (`HandleIn`)
 타입에 따라 자동 계산될 수 있습니다.
 
-#### RightHandleType
+### RightHandleType
 
 `HandleType`
 
 [HandleType](../../keyframe/interpolation/bezier/handle.md#handletype) 참조.
 우측(나가는) 핸들의 타입입니다. (`Automatic`, `Free` 등)
 
-#### RightHandleValue
+### RightHandleValue
 
 `any`
 

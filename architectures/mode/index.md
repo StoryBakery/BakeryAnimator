@@ -11,6 +11,18 @@ title: Mode System
 - `Property`, `Attribute`, `ValueObject`, 스크립트 상태 기반 감지를 모두 지원합니다.
 - 런타임 전용 커스텀 동작도 모드 훅으로 확장합니다.
 
+## 레이어 기준
+
+- 에디터 UI/UX는 Blender 기준을 따릅니다.
+- 데이터 계층은 Unreal Engine 시퀀스 계층을 따릅니다.
+- 모드 시스템을 포함한 런타임 동작은 Roblox 실행 제약을 우선합니다.
+
+충돌 시 우선순위:
+
+1. Roblox 실행 가능성
+1. 데이터 구조 일관성
+1. 에디터 UX 편의성
+
 ## 핵심 원칙
 
 ### Default Is Just Another Mode
@@ -54,6 +66,7 @@ Modes/
 - [ModeContract](./mode-contract.md)
 - [ModeFactory](./mode-factory.md)
 - [ModeValidator](./mode-validator.md)
+- [DefaultRobloxMode](./default-roblox-mode/index.md)
 
 ## Mode Contract
 
@@ -91,6 +104,26 @@ type ModePropertyChannel = {
     Observe: ((binding: ModeBinding, onChanged: () -> (), context: ModeContext) -> (() -> ()))?,
 }
 
+type ModeBindingUi = {
+    DisplayName: string?,
+    Description: string?,
+    Group: string?,
+    Order: number?,
+    Hidden: boolean?,
+}
+
+type ModePropertyUi = {
+    DisplayName: string?,
+    Description: string?,
+    Group: string?,
+    Unit: string?,
+    Order: number?,
+    Hidden: boolean?,
+    ReadOnly: boolean?,
+}
+
+type ModeEventEndpoint = (payload: table?) -> ()
+
 type ModeDefinition = {
     Manifest: {
         Id: string,
@@ -101,8 +134,12 @@ type ModeDefinition = {
     CanHandle: (entryPoint: Instance, context: ModeContext) -> (boolean),
     DetectBindings: (entryPoint: Instance, context: ModeContext) -> ({ModeBinding}, {ModeDiagnostic}),
     DetectProperties: (binding: ModeBinding, context: ModeContext) -> ({ModePropertyChannel}, {ModeDiagnostic}),
+    DescribeBindingUi: ((binding: ModeBinding, context: ModeContext) -> (ModeBindingUi?))?,
+    DescribePropertyUi: ((binding: ModeBinding, channel: ModePropertyChannel, context: ModeContext) -> (ModePropertyUi?))?,
     BuildRuntimeBehaviors: ((binding: ModeBinding, context: ModeContext) -> ({any}, {ModeDiagnostic}))?,
     SimulateEditorState: ((binding: ModeBinding, context: ModeContext) -> (table?))?,
+    ResolveBindingTag: ((tag: string, context: ModeContext) -> ({ModeBinding}, {ModeDiagnostic}))?,
+    ResolveEventEndpoint: ((endpointId: string, context: ModeContext) -> (ModeEventEndpoint?, {ModeDiagnostic}))?,
 }
 
 type ModeConstructor = {
@@ -159,8 +196,17 @@ type ValidationResult = {
 1. 사용자가 명시한 모드 ID가 있으면 우선 사용합니다.
 1. 명시가 없으면 `CanHandle` + `Manifest.Priority`로 모드를 선택합니다.
 1. 선택된 모드의 `DetectBindings`, `DetectProperties`로 트랙 매핑을 구성합니다.
+1. 에디터에서는 `DescribeBindingUi`, `DescribePropertyUi` 결과를 반영해 표시를 보정합니다.
+1. 태그 기반 바인딩이 있으면 `ResolveBindingTag`로 런타임 대상 재해결을 수행합니다.
+1. 이벤트 트랙이 있으면 `ResolveEventEndpoint`로 엔드포인트를 연결합니다.
 1. `Observe`를 구독해 변경 발생 시 해당 바인딩만 부분 재평가합니다.
 1. `BuildRuntimeBehaviors`가 있으면 런타임 훅을 연결합니다.
+
+## UI 표시 확장 정책
+
+- 모드는 `DescribeBindingUi`, `DescribePropertyUi`로 표시 텍스트/정렬/숨김을 보정할 수 있습니다.
+- UI 훅은 편집기 표시만 바꾸며, 감지/평가/적용 로직은 바꾸지 않습니다.
+- UI 훅이 없으면 코어 기본 표시 규칙을 사용합니다.
 
 ## 계층 구조
 
@@ -174,6 +220,12 @@ LevelSequence
 |        |- Section
 |           |- Channel
 |              |- Keyframe
+|     |- EventTrack
+|        |- Section
+|           |- EventKey
+|     |- ConstraintTrack
+|        |- Section
+|           |- ConstraintKey
 ```
 
 `BindingGroup`이 없는 경우:
@@ -185,6 +237,12 @@ LevelSequence
 |     |- Section
 |        |- Channel
 |           |- Keyframe
+|  |- EventTrack
+|     |- Section
+|        |- EventKey
+|  |- ConstraintTrack
+|     |- Section
+|        |- ConstraintKey
 ```
 
 ### Section 계층 규약
@@ -192,6 +250,7 @@ LevelSequence
 - `Section`은 `PropertyTrack` 내부의 시간 구간 단위입니다.
 - 각 `Section`은 시작/종료 시간과 블렌드 규칙을 가지며, 그 아래에 `Channel`과 `Keyframe`을 포함합니다.
 - 같은 `PropertyTrack` 안에서 `Section`이 겹치면 섹션 블렌드 정책으로 합성합니다.
+- `EventTrack`과 `ConstraintTrack`도 동일하게 `Section` 단위로 평가합니다.
 
 ## 모드 선택 규칙
 
@@ -211,34 +270,10 @@ LevelSequence
 이 계약을 사용하면 `Attribute`/`ValueObject`에 의존하지 않는 규칙도
 동일한 파이프라인에서 다룰 수 있습니다.
 
-## 기본 모드 예시
+## 기본 모드 상세
 
-```lua
-local DefaultRobloxMode = {}
-
-DefaultRobloxMode.Manifest = {
-    Id = "DefaultRoblox",
-    DisplayName = "Default Roblox Mode",
-    Version = "1.0.0",
-    Priority = 0,
-}
-
-function DefaultRobloxMode.CanHandle(entryPoint, _context)
-    return entryPoint:IsA("Model") or entryPoint:IsA("Folder")
-end
-
-function DefaultRobloxMode.DetectBindings(entryPoint, context)
-    -- ReflectionService 기반 기본 바인딩 감지
-    return {}, {}
-end
-
-function DefaultRobloxMode.DetectProperties(binding, context)
-    -- Roblox 기본 Property + Attribute 규칙
-    return {}, {}
-end
-
-return DefaultRobloxMode
-```
+기본 모드 구현 예시와 `ModeMetadata` 저장 규칙은
+[DefaultRobloxMode](./default-roblox-mode/index.md) 문서에서 관리합니다.
 
 ## 권장 정책
 

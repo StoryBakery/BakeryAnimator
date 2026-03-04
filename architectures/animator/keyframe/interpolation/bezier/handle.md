@@ -6,7 +6,7 @@ title: Bezier Handle Type
 
 베지어 핸들의 동작 방식을 정의합니다. (Blender 호환)
 
-#### AutoClamped
+### AutoClamped
 
 `@default`
 
@@ -14,25 +14,25 @@ title: Bezier Handle Type
 
 오버슈트(Overshoot)를 방지하며 자동으로 핸들이 계산됩니다.
 
-#### Free
+### Free
 
 - 키프레임 모양: 다이아몬드
 
 핸들을 독립적으로 조절할 수 있습니다 (방향/길이 개별).
 
-#### Aligned
+### Aligned
 
 - 키프레임 모양: 가장자리가 다듬어진 다이아몬드
 
 좌우 핸들의 방향이 일직선으로 유지되지만 길이는 독립적입니다.
 
-#### Vector
+### Vector
 
 - 키프레임 모양: 사각형
 
 자동 선형 보간을 생성합니다 (핸들 조작 시 Free로 변경).
 
-#### Automatic
+### Automatic
 
 - 키프레임 모양: 원형과 가운데의 점
 

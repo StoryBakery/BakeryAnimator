@@ -1,0 +1,3 @@
+interface:
+  display_name: "Bakery Animator Architecture"
+  short_description: "Guide mode-first animator architecture decisions"
