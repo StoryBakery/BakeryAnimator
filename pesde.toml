@@ -27,3 +27,4 @@ LinearInterpolation = { repo = "https://github.com/StoryBakery/LinearInterpolati
 MathUtil = { repo = "https://github.com/StoryBakery/MathUtil", rev = "v0.1.0" }
 BezierUtil = { repo = "https://github.com/StoryBakery/BezierUtil", rev = "v0.1.0" }
 ValueByPriority = { repo = "https://github.com/StoryBakery/ValueByPriority", rev = "v0.1.0" }
+StateObject = { repo = "https://github.com/StoryBakery/StateObject", rev = "v0.1.0" }

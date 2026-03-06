@@ -58,7 +58,7 @@ title: Section Evaluator
 - `Bezier`: 블렌더 방식의 핸들 기반 보간을 사용합니다.
 
 `Bezier`를 기본 보간으로 사용하는 경우, 키프레임에 핸들 정보가 없으면
-자동 핸들 정책(`Auto`)으로 계산합니다.
+자동 핸들 정책(`Auto` 또는 `AutoClamped`)으로 계산합니다.
 
 ## 섹션 경계 블렌드
 

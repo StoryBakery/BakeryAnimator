@@ -25,10 +25,9 @@ title: BindingGroup
 BindingGroup
 |- BindingChildren: Folder
 |  |- ...Binding
-|- Metadata: Folder
-|  |- ModeMetadata: Folder
-|  |  |- ...ModeId: Folder
+|- ...METADATA_<ADAPTER>_<PROP>: ObjectValue (optional, instance refs only)
 ```
 
-`ModeMetadata`의 내부 스키마는 클래스 문서에서 고정하지 않습니다.
-각 모드(`DefaultRoblox` 포함)가 자신의 문서에서 정의합니다.
+어댑터 메타데이터의 기본 저장소는 `BindingGroup` 자체 `Attribute`입니다.
+키 규칙은 `METADATA_<ADAPTER>_<PROP>`를 사용합니다.
+`Instance` 참조만 예외적으로 동일 키 이름의 `ObjectValue`를 사용할 수 있습니다.

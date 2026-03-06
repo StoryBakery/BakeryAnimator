@@ -12,5 +12,5 @@ title: Axis-Angle Rotation
 - **IK(Inverse Kinematics) 솔버 호환**:
   오일러(Euler) 분해 방식이 다루기 까다로운 복잡한 조인트의 연속성을 구하거나 IK 연산을 뒷받침 할 때 수학적 우위를 지닙니다.
 - **컴포넌트 변환**:
-  BakeryAnimator 코어에서 CFrame `fromAxisAngle` 메서드 활용 및
+  `ueblenox` 코어에서 CFrame `fromAxisAngle` 메서드 활용 및
   커스텀 로컬(Local) 좌표계에 따른 즉시 회전 변형을 연산하는 스크립팅 과정에 쓰입니다.

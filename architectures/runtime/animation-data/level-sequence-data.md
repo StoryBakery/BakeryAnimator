@@ -50,17 +50,26 @@ title: LevelSequenceData
 
 시퀀서 클립 목록입니다.
 
+### SequenceMarkers
+
+`{MarkerData}?`
+
+시퀀스 전체 타임라인에서 공유되는 전역 마커 목록입니다.
+
 ### SequencerSettings
 
 `SequencerSettingsData`
 
 시간 평가 설정입니다.
+Blender 동기화 시 `DisplayRate`는 Scene FPS를 사용하고,
+`TickResolution`은 더 높은 정밀도 단위를 사용합니다.
 
 ### RecordingMetadata
 
 `RecordingMetadataData?`
 
 테이크/레코딩 메타데이터입니다.
+Blender 동기화 시 `SourceSceneName`으로 추출 기준 Scene을 기록할 수 있습니다.
 
 ### BindingTagsToBindingIds
 
@@ -81,6 +90,7 @@ type SequencerSettingsData = {
 type RecordingMetadataData = {
     Slate: string?,
     TakeNumber: number?,
+    SourceSceneName: string?,
     SourceTimecode: string?,
     RecorderVersion: string?,
 }
@@ -90,9 +100,10 @@ type EaseCurveData = {
     Function: "Linear" | "EaseIn" | "EaseOut" | "EaseInOut" | "Custom",
 }
 
-type SyncMarkerData = {
+type MarkerData = {
     Name: string,
     Time: number,
+    Value: string?,
 }
 
 type SectionEvalData = {
@@ -119,10 +130,13 @@ type LevelSequenceClip = {
     Section: SectionEvalData?,
     BindingIds: {string}?,
     BindingTags: {string}?,
+    AudioAssetId: string?,
+    AttachBindingId: string?,
+    StartOffsetSeconds: number?,
+    Looping: boolean?,
     EventEndpointId: string?,
     ConstraintId: string?,
     SubsequenceKey: string?,
-    SyncMarkers: {SyncMarkerData}?,
     Payload: table?,
 }
 ```
@@ -158,6 +172,24 @@ type LevelSequenceClip = {
 `(sequenceKey: string) -> (LevelSequenceClip?)`
 
 `ClipType = "Subsequence"`인 클립을 반환합니다.
+
+### FindAudioClipsInRange
+
+`(startTime: number, endTime: number) -> ({LevelSequenceClip})`
+
+`ClipType = "Audio"`인 클립 중 시간 구간에 겹치는 항목을 반환합니다.
+
+### GetSequenceMarkers
+
+`() -> ({MarkerData})`
+
+시퀀스 전역 마커를 시간 오름차순으로 반환합니다.
+
+### FindSequenceMarkersByName
+
+`(name: string) -> ({MarkerData})`
+
+이름이 같은 시퀀스 전역 마커 목록을 반환합니다.
 
 ### FindBindingIdsByTag
 

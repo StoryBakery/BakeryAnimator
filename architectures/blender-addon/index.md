@@ -16,13 +16,14 @@ title: Blender Addon
 ## 문서 범위
 
 이 문서는 블렌더 애드온의 전체 구현 계획을 다룹니다.
-동기화 포맷과 좌표계 상세는 [Transform Sync](./transform-sync.md)에서 다룹니다.
+동기화 관련 상세 문서는 [Sync](./sync/index.md)에서 다룹니다.
 
 ## 목표
 
 - 블렌더 타임라인의 포즈를 로블록스에서 같은 결과로 재현할 수 있어야 합니다.
 - 파일 내보내기(`.sbbtra`)와 실시간 프리뷰(WebSocket)를 모두 지원합니다.
 - FBX/glTF 변환 단계를 생략하고 Blender API에서 직접 데이터를 추출합니다.
+- 양방향 동기화는 지원하되, 항목별 권한 소스와 라운드트립 한계를 명시적으로 유지합니다.
 
 ## MVP 범위
 
@@ -43,6 +44,7 @@ title: Blender Addon
 - Shape Key / Material / Light 애니메이션
 - 블렌더 외부 DCC 툴 직접 연동
 - 양방향 편집 충돌 자동 병합
+- Blender와 Studio를 완전 대칭 편집기로 만드는 것
 
 ## 애드온 구조
 
@@ -85,6 +87,28 @@ WebSocket 서버 주소입니다. 예: `ws://127.0.0.1:8765`
 `sample_rate: number`
 초당 샘플링 수(FPS)입니다.
 
+`sync_mode: "SceneSampled" | "ActionDriven"`
+블렌더 데이터 해석 모드입니다. 기본값은 `SceneSampled`입니다.
+자세한 기준은 [Sync Mode](./sync/sync-mode.md)를 따릅니다.
+
+`scene_scope: "ActiveScene" | "NamedScene"`
+동기화 기준 Scene 선택 방식입니다. 기본값은 `ActiveScene`입니다.
+
+`source_scene_name: string?`
+`scene_scope = "NamedScene"`일 때 사용할 Scene 이름입니다.
+기본값은 `"Scene"`입니다.
+Scene 해석 실패 시에도 `"Scene"`으로 폴백합니다.
+
+`initial_sync_source: "Auto" | "Blender" | "Studio"`
+초기 동기화 기준 소스입니다. 기본값은 `Auto`입니다.
+`Auto`는 값 존재 여부 기준으로 `Studio`/`Blender`를 선택합니다.
+자세한 규칙은 [Sync Policy](./sync/sync-policy.md)의 초기 동기화 정책을 따릅니다.
+
+`fill_empty_from_blender: boolean`
+빈 값(`nil`/누락 필드)을 블렌더 값으로 채울지 여부입니다.
+`Blender`가 초기 소스로 선택된 경우에만 적용됩니다. 기본값은 `true`입니다.
+적용 조건은 [Sync Policy](./sync/sync-policy.md)를 기준으로 합니다.
+
 ### Panel Actions
 
 - Connect: 서버 연결
@@ -106,7 +130,7 @@ Transform을 읽습니다.
 ### 3. 좌표계 변환
 
 Blender 좌표를 Roblox 좌표로 변환하고, Local Delta 기준으로 정규화합니다.
-변환 규칙은 [Transform Sync](./transform-sync.md)와 동일해야 합니다.
+변환 규칙은 [Transform Sync](./sync/transform-sync.md)와 동일해야 합니다.
 
 ### 4. 채널 최적화
 
@@ -143,4 +167,8 @@ Blender 좌표를 Roblox 좌표로 변환하고, Local Delta 기준으로 정규
 
 ## 다음 문서
 
-- [Transform Sync](./transform-sync.md): 좌표계, 패킷, Motor6D 변환 상세
+- [Sync](./sync/index.md): 동기화 문서 진입점
+- [Sync Mode](./sync/sync-mode.md): Scene 평가값 샘플 기준/Action 기준 해석 모드
+- [Sync Policy](./sync/sync-policy.md): 동기화 방향, 초기 소스, 충돌 처리 정책
+- [Bidirectional Sync](./sync/bidirectional-sync.md): Blender/Studio 양방향 편집 범위와 권한 소스
+- [Transform Sync](./sync/transform-sync.md): 좌표계, 패킷, Motor6D 변환 상세

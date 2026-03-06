@@ -7,26 +7,25 @@ title: AnimationData
 Unreal Engine 구조에 맞춰 `LevelSequenceData`와 `AnimationSequenceData`를 분리하고,
 두 타입은 공통 인터페이스(`AnimationAssetData`)만 공유합니다.
 
-## 레이어 기준
-
-`AnimationData` 계층은 다음 원칙을 따릅니다.
-
-- 에디터 표시와 조작 경험은 Blender 기준 UX를 따릅니다.
-- 저장/평가 구조는 Unreal Engine 시퀀스 계층을 따릅니다.
-- 최종 동작은 Roblox 런타임 제약을 우선합니다.
-
-충돌 시 우선순위:
-
-1. Roblox 실행 가능성
-1. 데이터 구조 일관성
-1. 에디터 UX 편의성
+공통 레이어 기준과 충돌 우선순위는 [Architecture Main](../../main.md)을 따릅니다.
 
 ## 설계 방향
 
 - `LevelSequenceData`: 바인딩/트랙/섹션 기반 시퀀서 데이터
+  - 전역 마커(`SequenceMarkers`)와 트랙 로컬 마커(`TrackData.Markers`)를 함께 지원합니다.
+  - `PropertyTrack`, `EventTrack`, `AudioTrack`, `ConstraintTrack`을 함께 지원합니다.
 - `AnimationSequenceData`: 본/곡선 기반 애니메이션 시퀀스 데이터
 - `AnimationData`: 두 concrete 타입의 유니온
 - `AnimationAssetData`: 두 concrete 타입이 공유하는 최소 공통 인터페이스
+
+## 계층 관계
+
+1. [Animator Instances](../../animator/instances/instances.md)는 편집 저장용 원본입니다.
+1. `AnimationData`는 그 원본을 런타임 평가용으로 정규화한 정적 데이터입니다.
+1. [LevelSequence](../animation-track/level-sequence.md)와 [AnimationTrack](../animation-track/index.md)은 이 정적 데이터를 읽어 런타임 상태를 붙입니다.
+
+따라서 `AnimationData`는 편집기 내부 저장 구조를 그대로 복제하는 계층이 아니라,
+런타임 평가에 맞게 압축되고 정규화된 계층입니다.
 
 ## 공통 인터페이스
 
@@ -89,5 +88,7 @@ type AnimationData = LevelSequenceData | AnimationSequenceData
 
 - Unreal도 `LevelSequence` 계열(`UMovieSceneSequence`)과
   `AnimationSequence` 계열(`UAnimationAsset`)을 분리합니다.
+- `BindingGroupAnimationData`는 공통 인터페이스가 아니라
+  `LevelSequenceData` 내부 서브 컨테이너로 유지합니다.
 - 따라서 단일 거대 데이터보다
   **분리된 concrete 타입 + 공통 최소 인터페이스**가 더 UE 구조에 가깝습니다.

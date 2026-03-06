@@ -91,7 +91,7 @@ title: AnimationSequenceData
 type BezierHandleData = {
     Time: number,
     Value: number,
-    HandleType: "Auto" | "Free" | "Vector" | "Aligned",
+    HandleType: "Auto" | "AutoClamped" | "Free" | "Vector" | "Aligned",
 }
 
 type KeyframeData = {

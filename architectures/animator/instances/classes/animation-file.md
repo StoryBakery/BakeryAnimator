@@ -31,17 +31,20 @@ title: AnimationFile
 `boolean`
 
 반복 재생 여부입니다.
+런타임 로딩 시 concrete 데이터 기본값보다 우선 적용되는 오버라이드 힌트입니다.
 
 ### Priority
 
 `number`
 
 애니메이션 우선순위입니다.
+런타임 트랙 생성 시 기본 우선순위 오버라이드로 사용합니다.
 
 ## PreferredChildren
 
-- `Marker`
+- `Marker` (global)
 - `BindingGroup` (optional)
 - `Binding`
 
 `BindingGroup` 없이 `Binding`을 루트 자식으로 둘 수 있습니다.
+로컬 마커는 `Binding` 하위 `Marker`를 사용합니다.

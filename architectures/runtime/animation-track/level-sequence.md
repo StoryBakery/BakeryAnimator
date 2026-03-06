@@ -13,7 +13,7 @@ Unreal Engine의 `Level Sequence`나 Blender의 `Action Editor`와 유사한
    소품)을 바인딩 그룹 또는 루트 바인딩 형태로 제어할 수 있습니다.
 1. **Synchronization**: 여러 캐릭터의 애니메이션을 하나의 타임라인에서 동기화하여 재생합니다.
 1. **Track Management**: 내부적으로 여러 트랙 타입(`Property`, `Event`,
-   `Constraint`, `Subsequence`, `CameraCut`)을 스케줄링합니다.
+   `Audio`, `Constraint`, `Subsequence`, `CameraCut`)을 스케줄링합니다.
 
 ```lua
 LevelSequence
@@ -33,6 +33,7 @@ LevelSequence
 |- HierarchicalBiasBySequenceKey: {[string]: number}
 |- BindingTagsToBindingIds: {[string]: {string}}
 |- SpawnablesByBindingId: {[string]: SpawnableState}
+|- SequenceMarkers: {MarkerData}?
 |- MasterClock: number
 |- ClockSource: "Tick" | "Platform" | "Audio" | "Timecode"
 |- DisplayRate: number
@@ -65,6 +66,7 @@ LevelSequenceParams = {
 TrackCollection = {
     PropertyTracks: {AnimationTrack}?,
     EventTracks: {EventTrack}?,
+    AudioTracks: {AudioTrack}?,
     ConstraintTracks: {ConstraintTrack}?,
     SubsequenceTracks: {SubsequenceTrack}?,
     CameraCutTracks: {CameraCutTrack}?,
@@ -101,7 +103,7 @@ SpawnableState = {
 `{[string]: TrackCollection}`
 
 바인딩 키(그룹 키 또는 루트 바인딩 ID)별 트랙 컬렉션입니다.
-속성 트랙 외에도 이벤트/제약/서브시퀀스/카메라 컷 트랙을 함께 관리합니다.
+속성 트랙 외에도 이벤트/오디오/제약/서브시퀀스/카메라 컷 트랙을 함께 관리합니다.
 
 ### SubsequenceInstancesByKey
 
@@ -129,6 +131,13 @@ SpawnableState = {
 `{[string]: SpawnableState}`
 
 시퀀스가 소유하는 생성형(Spawnable) 바인딩의 런타임 상태입니다.
+
+### SequenceMarkers
+
+`{MarkerData}?`
+
+시퀀스 전역 마커 목록입니다.
+모든 바인딩 트랙이 공유하는 기준점으로 사용됩니다.
 
 ### MasterClock
 
@@ -184,8 +193,12 @@ UI/편집에서 기준이 되는 표시 FPS입니다.
 
 ### Marker Lock
 
-`LevelSequenceData.Clips[].SyncMarkers`에 동일한 이름의 마커가 존재하면,
-같은 `SyncGroup` 안에서 동일 마커 시점으로 정렬합니다.
+마커 동기화는 전역/로컬 2계층으로 평가합니다.
+
+- 전역 기준: `LevelSequenceData.SequenceMarkers`
+- 로컬 기준: `BindingGroupAnimationData.TracksByBindingId[].Markers`
+- 같은 이름이 충돌하면 로컬 마커를 우선합니다.
+- 로컬 마커가 없으면 전역 마커로 폴백합니다.
 
 ### Drift Correction
 
@@ -217,6 +230,11 @@ Spawnable 바인딩은 시퀀스 평가 구간에서 생성/파괴될 수 있으
 
 `EventTrack`은 현재 프레임의 이벤트 키를 수집해
 디렉터/엔드포인트에 순서대로 디스패치합니다.
+
+### Audio Synchronization
+
+`AudioTrack`은 `MasterClock` 기준으로 섹션을 샘플링합니다.
+클립 시작/종료, `StartOffsetSeconds`, 볼륨/피치 채널을 같은 시계로 평가합니다.
 
 ### Constraint Solve Order
 

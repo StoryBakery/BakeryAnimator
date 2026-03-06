@@ -7,7 +7,7 @@ title: Quaternion Rotation
 
 ## 짐벌 락 회피와 보간 (Interpolation)
 
-BakeryAnimator가 "내부는 정밀하게, 겉은 단순하게" UX 전략을 사용하지만 연산 중간 과정에선
+`ueblenox`가 "내부는 정밀하게, 겉은 단순하게" UX 전략을 사용하지만 연산 중간 과정에선
 **구면 선형 보간 SLERP**을 수행해야 부드럽고 자연스러운 공간 회전을 얻을 수 있습니다.
 
 - **스칼라 조립**
